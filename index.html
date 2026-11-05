@@ -63,6 +63,15 @@
 
   <div class="card app-card mb-3">
     <div class="card-body">
+      <div class="section-title mb-2">Evolución del azúcar en sangre</div>
+      <div class="small text-secondary mb-2">Últimas 14 mediciones · mg/dL · paciente seleccionado</div>
+      <div id="glucoseChartEmpty" class="empty-state d-none">Aún no hay mediciones de azúcar para mostrar.</div>
+      <div class="chart-wrap" id="glucoseChartWrap"><canvas id="glucoseTrendChart" aria-label="Gráfica de evolución del azúcar en sangre" role="img"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card app-card mb-3">
+    <div class="card-body">
       <div class="section-title mb-2">Evolución reciente</div>
       <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
     </div>

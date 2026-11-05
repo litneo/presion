@@ -15,3 +15,5 @@ Añade un módulo independiente para glucosa/azúcar en sangre:
 - IndexedDB local y PWA offline.
 
 La aplicación solo registra información y no realiza diagnóstico médico.
+
+Actualización V4: gráfica de evolución del azúcar en sangre en el dashboard, con las últimas 14 mediciones del paciente seleccionado, fecha, hora y contexto de medición.

@@ -1,5 +1,5 @@
 const DB="MiPresionPro",VER=3, P="patients",O="operators",R="readings",G="glucose";
-let db,trendChart,catChart,installPrompt,operatorMap=new Map();
+let db,trendChart,glucoseTrendChart,catChart,installPrompt,operatorMap=new Map();
 const $=id=>document.getElementById(id);
 const screens=["dashboard","quickStart","confirmScreen","formScreen","history","glucoseHistory","glucoseStart","glucoseConfirm","reports","patients","settings"];
 
@@ -83,10 +83,35 @@ async function saveQuick(){
 async function renderGlucoseDashboard(){
   const pid=Number(localStorage.getItem("patientId"));
   const gs=(await all(G)).filter(x=>x.patientId===pid).sort((a,b)=>b.dateTime.localeCompare(a.dateTime));
+  drawGlucoseTrend(gs.slice(0,14).reverse());
   if(!gs.length){$("lastGlucoseValue").textContent="Sin registros";$("lastGlucoseMeta").textContent="Registre una medición de azúcar.";return}
   const x=gs[0];
   $("lastGlucoseValue").textContent=`${x.value} mg/dL`;
   $("lastGlucoseMeta").textContent=`${x.timing} · ${operatorMap.get(x.operatorId)||"—"} · ${fmt(x.date)} · ${x.time}`;
+}
+function drawGlucoseTrend(records){
+  if(glucoseTrendChart){glucoseTrendChart.destroy();glucoseTrendChart=null;}
+  $("glucoseChartEmpty").classList.toggle("d-none",records.length>0);
+  $("glucoseChartWrap").classList.toggle("d-none",records.length===0);
+  if(!records.length || typeof Chart==="undefined")return;
+  glucoseTrendChart=new Chart($("glucoseTrendChart"),{
+    type:"line",
+    data:{
+      labels:records.map(x=>`${fmtShort(x.date)} ${x.time||""}`.trim()),
+      datasets:[{
+        label:"Azúcar (mg/dL)",data:records.map(x=>Number(x.value)),
+        borderColor:"#d68b00",backgroundColor:"rgba(255,193,7,.15)",
+        pointBackgroundColor:"#d68b00",pointRadius:5,pointHoverRadius:7,
+        borderWidth:3,tension:.25,fill:true
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{intersect:false,mode:"index"},
+      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{afterLabel:context=>records[context.dataIndex].timing||""}}},
+      scales:{x:{ticks:{maxTicksLimit:5,maxRotation:0}},y:{beginAtZero:false,title:{display:true,text:"mg/dL"}}}
+    }
+  });
 }
 async function renderDashboard(){
 await renderGlucoseDashboard();
